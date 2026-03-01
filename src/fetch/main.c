@@ -16,7 +16,11 @@
 #include <sys/sysinfo.h>
 #elif !defined(__MINGW32__)
 #include <langinfo.h>
-#include <sys/sysctl.h>
+#if defined(__has_include)
+#  if __has_include(<sys/sysctl.h>)
+#    include <sys/sysctl.h>
+#  endif
+#endif
 #include <sys/utsname.h>
 #else
 #include <sysinfoapi.h>
@@ -118,7 +122,7 @@ fallback_cpuinfo(void){
 
 static int
 fetch_bsd_cpuinfo(fetched_info* fi){
-#if defined(__linux__) || defined(__gnu_hurd__) || defined(__MINGW32__)
+#if defined(__linux__) || defined(__gnu_hurd__) || defined(__MINGW32__) || defined(__MVS__)
   (void)fi;
 #else
   size_t len = sizeof(fi->core_count);

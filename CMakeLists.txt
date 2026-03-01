@@ -153,6 +153,10 @@ set_package_properties(Threads PROPERTIES TYPE REQUIRED)
 # platform-specific logics
 if(WIN32)
   set(LIBRT wsock32 ws2_32 secur32)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "OS390")
+  # z/OS: clock_gettime etc. are in libc, no separate librt/libm
+  set(LIBRT "")
+  set(LIBM "")
 elseif(NOT APPLE)
   find_library(LIBM m REQUIRED)
   find_library(LIBRT rt REQUIRED)

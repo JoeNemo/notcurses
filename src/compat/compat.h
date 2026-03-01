@@ -19,6 +19,29 @@ extern "C" {
 #define TIMER_ABSTIME 1
 #endif
 
+#ifdef __MVS__
+#include <fcntl.h>
+#include <poll.h>
+#include <signal.h>
+#include <unistd.h>
+
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0x00001000
+#endif
+
+#ifndef TIMER_ABSTIME
+#define TIMER_ABSTIME 1
+#endif
+
+#undef PTHREAD_CANCELED
+#define PTHREAD_CANCELED ((void*)(intptr_t)-1)
+
+/* ppoll() and pipe2() are implemented in zos_ppoll.c */
+int ppoll(struct pollfd *fds, nfds_t nfds,
+          const struct timespec *tmo_p, const sigset_t *sigmask);
+int pipe2(int pipefd[2], int flags);
+#endif
+
 #ifdef  __MINGW32__
 static inline char
 path_separator(void){

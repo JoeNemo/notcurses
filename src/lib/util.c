@@ -5,7 +5,11 @@
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
 #elif !defined(__MINGW32__)
-#include <sys/sysctl.h>
+#if defined(__has_include)
+#  if __has_include(<sys/sysctl.h>)
+#    include <sys/sysctl.h>
+#  endif
+#endif
 #include <sys/utsname.h>
 #endif
 #else
