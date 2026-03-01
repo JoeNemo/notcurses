@@ -40,9 +40,13 @@ set(ZOS_CXX_SIDEDECKS "\
   \"//'CEE.SCEELIB(CRTDQXLA)'\" \
   \"//'CEE.SCEELIB(CRTDQUNW)'\"")
 
+# Link the zopen portable GNU getopt (libgetopt.a) so that getopt_long()
+# works correctly in ASCII mode (-fzos-le-char-mode=ascii).  The system
+# z/OS getopt operates on EBCDIC argv, which causes option parsing to fail
+# when the binary is compiled in ASCII mode.
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-m64 \
   -L${ZOSLIB_PREFIX}/lib -lzoslib \
-  -L${ZOPEN_PREFIX}/lib \
+  -L${ZOPEN_PREFIX}/lib -lgetopt \
   ${ZOS_CXX_SIDEDECKS}")
 
 set(CMAKE_SHARED_LINKER_FLAGS_INIT "-m64 \
