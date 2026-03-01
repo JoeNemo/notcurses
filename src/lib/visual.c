@@ -19,6 +19,13 @@ static ncvisual_implementation null_visual_implementation = {0};
 
 ncvisual_implementation* visual_implementation = &null_visual_implementation;
 
+// z/OS DLL fix: cross-DLL data imports get separate copies.
+// The media library must call this function (in core) to set the
+// pointer, rather than assigning the extern directly.
+void ncvisual_set_implementation(ncvisual_implementation* impl){
+  visual_implementation = impl;
+}
+
 // to be called at startup -- performs any necessary engine initialization.
 int ncvisual_init(int logl){
   if(visual_implementation->visual_init){

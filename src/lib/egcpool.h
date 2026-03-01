@@ -93,6 +93,33 @@ utf8_codepoint_length(unsigned char c){
   }
 }
 
+
+#ifdef __MVS__
+// z/OS: mbrtowc in ASCII mode decodes ISO-8859-1 instead of UTF-8,
+// even when the locale claims UTF-8.  Use a direct UTF-8 decoder.
+static inline int
+utf8_decode(const char *s, wchar_t *wc){
+  const unsigned char *u = (const unsigned char *)s;
+  if(u[0] < 0x80){
+    *wc = u[0];
+    return u[0] ? 1 : 0;
+  }else if((u[0] & 0xe0) == 0xc0){
+    if((u[1] & 0xc0) != 0x80) return -1;
+    *wc = ((u[0] & 0x1f) << 6) | (u[1] & 0x3f);
+    return 2;
+  }else if((u[0] & 0xf0) == 0xe0){
+    if((u[1] & 0xc0) != 0x80 || (u[2] & 0xc0) != 0x80) return -1;
+    *wc = ((u[0] & 0x0f) << 12) | ((u[1] & 0x3f) << 6) | (u[2] & 0x3f);
+    return 3;
+  }else if((u[0] & 0xf8) == 0xf0){
+    if((u[1] & 0xc0) != 0x80 || (u[2] & 0xc0) != 0x80 || (u[3] & 0xc0) != 0x80) return -1;
+    *wc = ((u[0] & 0x07) << 18) | ((u[1] & 0x3f) << 12) | ((u[2] & 0x3f) << 6) | (u[3] & 0x3f);
+    return 4;
+  }
+  return -1;
+}
+#endif  
+
 // Eat an EGC from the UTF-8 string input, counting bytes and columns. We use
 // libunistring's uc_is_grapheme_break() to segment EGCs. Writes the number of
 // columns to '*colcount'. Returns the number of bytes consumed, not including
@@ -110,7 +137,11 @@ utf8_egc_len(const char* gcluster, int* colcount){
   wchar_t wc, prevw = 0;
   bool injoin = false;
   do{
+#ifdef __MVS__
+    r = utf8_decode(gcluster, &wc);
+#else
     r = mbrtowc(&wc, gcluster, MB_LEN_MAX, &mbt);
+#endif
     if(r < 0){
       // FIXME probably ought escape this somehow
       logerror("invalid UTF8: %s", gcluster);

@@ -32,8 +32,8 @@ cmake_dependent_option(
   USE_STATIC_BINARIES "Link binaries statically (requires USE_STATIC)" OFF
   "USE_STATIC" ON
 )
-set(USE_MULTIMEDIA "ffmpeg" CACHE STRING "Multimedia engine, one of 'ffmpeg', 'oiio', or 'none'")
-set_property(CACHE USE_MULTIMEDIA PROPERTY STRINGS ffmpeg oiio none)
+set(USE_MULTIMEDIA "ffmpeg" CACHE STRING "Multimedia engine, one of 'ffmpeg', 'oiio', 'stb', or 'none'")
+set_property(CACHE USE_MULTIMEDIA PROPERTY STRINGS ffmpeg oiio stb none)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE
     STRING "Choose the build mode." FORCE)
@@ -42,6 +42,7 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel Re
 ############## END (additional) USER-SELECTABLE OPTIONS ##################
 set(USE_FFMPEG OFF)
 set(USE_OIIO OFF)
+set(USE_STB OFF)
 if(${USE_MULTIMEDIA} STREQUAL "ffmpeg")
   set(USE_FFMPEG ON)
 elseif(${USE_MULTIMEDIA} STREQUAL "oiio")
@@ -49,8 +50,10 @@ elseif(${USE_MULTIMEDIA} STREQUAL "oiio")
     message(FATAL_ERROR "USE_CXX must be on to use OpenImageIO.")
   endif()
   set(USE_OIIO ON)
+elseif(${USE_MULTIMEDIA} STREQUAL "stb")
+  set(USE_STB ON)
 elseif(NOT ${USE_MULTIMEDIA} STREQUAL "none")
-  message(FATAL_ERROR "USE_MULTIMEDIA must be one of 'oiio', 'ffmpeg', 'none' (was '${USE_MULTIMEDIA}').")
+  message(FATAL_ERROR "USE_MULTIMEDIA must be one of 'oiio', 'ffmpeg', 'stb', 'none' (was '${USE_MULTIMEDIA}').")
 endif()
 if (NOT BUILD_EXECUTABLES AND USE_POC)
   message(WARNING "Disabling USE_POC since BUILD_EXECUTABLES=OFF")

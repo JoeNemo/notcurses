@@ -1814,6 +1814,7 @@ typedef struct ncvisual_implementation {
 
 // populated by libnotcurses.so if linked with multimedia
 API extern ncvisual_implementation* visual_implementation;
+API void ncvisual_set_implementation(ncvisual_implementation* impl);
 
 // in cygwin/msys2, isatty(3) always fails, so use _isatty() from UCRT.
 static inline int

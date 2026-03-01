@@ -12,8 +12,10 @@
 #cmakedefine USE_FFMPEG
 // exclusive with USE_FFMPEG
 #cmakedefine USE_OIIO
+// stb_image (lightweight, images only)
+#cmakedefine USE_STB
 // set if either USE_FFMPEG || USE_OIIO
-#if defined(USE_FFMPEG) || defined(USE_OIIO)
+#if defined(USE_FFMPEG) || defined(USE_OIIO) || defined(USE_STB)
 #define NOTCURSES_USE_MULTIMEDIA
 #endif
 #define NOTCURSES_SHARE "@CMAKE_INSTALL_FULL_DATADIR@/notcurses"

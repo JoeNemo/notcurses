@@ -1,5 +1,6 @@
 #include "builddef.h"
 #ifndef USE_OIIO
+#ifndef USE_STB
 #ifndef USE_FFMPEG
 #include "lib/internal.h"
 
@@ -12,5 +13,6 @@ ncvisual_implementation local_visual_implementation = {
   .visual_printbanner = printbanner,
 };
 
+#endif
 #endif
 #endif
